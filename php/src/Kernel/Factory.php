@@ -46,13 +46,14 @@ class Factory
             $config->alipayPublicKey = $certEnvironment->getCachedAlipayPublicKey();
         }
 
-        $kernel = new EasySDKKernel($config);
-        self::$base = new Base($kernel);
-        self::$marketing = new Marketing($kernel);
-        self::$member = new Member($kernel);
-        self::$payment = new Payment($kernel);
-        self::$security = new Security($kernel);
-        self::$util = new Util($kernel);
+        $this->kernel = new EasySDKKernel($config);
+        $this->config = $config;
+        self::$base = new Base($this->kernel);
+        self::$marketing = new Marketing($this->kernel);
+        self::$member = new Member($this->kernel);
+        self::$payment = new Payment($this->kernel);
+        self::$security = new Security($this->kernel);
+        self::$util = new Util($this->kernel);
     }
 
     public static function setOptions($config)
@@ -238,7 +239,8 @@ class Util
         return new genericClient($this->kernel);
     }
 
-    public function aes(){
+    public function aes()
+    {
         return new aesClient($this->kernel);
     }
 }
