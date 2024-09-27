@@ -384,8 +384,10 @@ class EasySDKKernel
                 $sortedMap = $this->textParams;
             }
         }
-        if ($this->getConfig(AlipayConstants::NOTIFY_URL_CONFIG_KEY) != null) {
-            $sortedMap[AlipayConstants::NOTIFY_URL_FIELD] = $this->getConfig(AlipayConstants::NOTIFY_URL_CONFIG_KEY);
+        if (!isset($sortedMap[AlipayConstants::NOTIFY_URL_FIELD])) {
+            if ($this->getConfig(AlipayConstants::NOTIFY_URL_CONFIG_KEY) != null) {
+                $sortedMap[AlipayConstants::NOTIFY_URL_FIELD] = $this->getConfig(AlipayConstants::NOTIFY_URL_CONFIG_KEY);
+            }
         }
         return $sortedMap;
     }
