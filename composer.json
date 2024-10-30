@@ -2,7 +2,7 @@
 	"name":"simplephp/easy-alipaysdk",
 	"description":"支付宝官方 Alipay Easy SDK",
 	"type":"library",
-	"version":"2.2.5",
+	"version":"2.2.6",
 	"authors":[
 		{
 			"name":"junying.wjy",

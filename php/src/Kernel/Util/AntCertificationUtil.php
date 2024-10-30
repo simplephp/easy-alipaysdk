@@ -15,6 +15,9 @@ class AntCertificationUtil
     {
         $cert = file_get_contents($certPath);
         $ssl = openssl_x509_parse($cert);
+        if ($ssl === false) {
+            throw new \RuntimeException("Failed to parse certificate.");
+        }
         $SN = md5($this->array2string(array_reverse($ssl['issuer'])) . $ssl['serialNumber']);
         return $SN;
     }
@@ -28,6 +31,9 @@ class AntCertificationUtil
     {
         $cert = file_get_contents($certPath);
         $pkey = openssl_pkey_get_public($cert);
+        if ($pkey === false) {
+            throw new \RuntimeException("Failed to extract public key from certificate.");
+        }
         $keyData = openssl_pkey_get_details($pkey);
         $public_key = str_replace('-----BEGIN PUBLIC KEY-----', '', $keyData['key']);
         $public_key = trim(str_replace('-----END PUBLIC KEY-----', '', $public_key));
@@ -46,7 +52,11 @@ class AntCertificationUtil
         $array = explode("-----END CERTIFICATE-----", $cert);
         $SN = null;
         for ($i = 0; $i < count($array) - 1; $i++) {
-            $ssl[$i] = openssl_x509_parse($array[$i] . "-----END CERTIFICATE-----");
+            $tmp = openssl_x509_parse($array[$i] . "-----END CERTIFICATE-----");
+            if ($tmp === false) {
+                throw new \RuntimeException("Failed to parse certificate.");
+            }
+            $ssl[$i] = $tmp;
             if (strpos($ssl[$i]['serialNumber'], '0x') === 0) {
                 $ssl[$i]['serialNumber'] = $this->hex2dec($ssl[$i]['serialNumberHex']);
             }

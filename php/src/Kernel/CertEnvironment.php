@@ -5,7 +5,6 @@ namespace Alipay\EasySDK\Kernel;
 
 
 use Alipay\EasySDK\Kernel\Util\AntCertificationUtil;
-use http\Exception\RuntimeException;
 
 class CertEnvironment
 {
@@ -24,7 +23,16 @@ class CertEnvironment
     public function certEnvironment($merchantCertPath, $alipayCertPath, $alipayRootCertPath)
     {
         if (empty($merchantCertPath) || empty($alipayCertPath) || empty($alipayRootCertPath)) {
-            throw new RuntimeException("证书参数merchantCertPath、alipayCertPath或alipayRootCertPath设置不完整。");
+            throw new \RuntimeException("证书参数merchantCertPath、alipayCertPath或alipayRootCertPath设置不完整。");
+        }
+        if (!file_exists($merchantCertPath)) {
+            throw new \RuntimeException("商户公钥证书文件不存在，文件路径：" . $merchantCertPath);
+        }
+        if (!file_exists($alipayCertPath)) {
+            throw new \RuntimeException("支付宝公钥证书文件不存在，文件路径：" . $alipayCertPath);
+        }
+        if (!file_exists($alipayRootCertPath)) {
+            throw new \RuntimeException("支付宝根证书文件不存在，文件路径：" . $alipayRootCertPath);
         }
         $antCertificationUtil = new AntCertificationUtil();
         $this->rootCertSN = $antCertificationUtil->getRootCertSN($alipayRootCertPath);
