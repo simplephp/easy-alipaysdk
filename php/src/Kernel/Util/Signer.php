@@ -16,7 +16,11 @@ class Signer
             wordwrap($priKey, 64, "\n", true) .
             "\n-----END RSA PRIVATE KEY-----";
         ($res) or die('您使用的私钥格式错误，请检查RSA私钥配置');
-
+        $key = openssl_pkey_get_private($res);
+        if($key === false) {
+            throw new \RuntimeException("Failed to extract private key from certificate.");
+        }
+        openssl_free_key($key);
         openssl_sign($content, $sign, $res, OPENSSL_ALGO_SHA256);
         $sign = base64_encode($sign);
         return $sign;
@@ -35,11 +39,13 @@ class Signer
             wordwrap($pubKey, 64, "\n", true) .
             "\n-----END PUBLIC KEY-----";
         ($res) or die('支付宝RSA公钥错误。请检查公钥文件格式是否正确');
-
+        $key = openssl_pkey_get_public($res);
+        if($key === false) {
+            throw new \RuntimeException("Failed to extract public key from certificate.");
+        }
+        openssl_free_key($key);
         //调用openssl内置方法验签，返回bool值
-        $result = FALSE;
-        $result = (openssl_verify($content, base64_decode($sign), $res, OPENSSL_ALGO_SHA256) === 1);
-        return $result;
+        return (openssl_verify($content, base64_decode($sign), $res, OPENSSL_ALGO_SHA256) === 1);
     }
 
     public function verifyParams($parameters, $publicKey)
